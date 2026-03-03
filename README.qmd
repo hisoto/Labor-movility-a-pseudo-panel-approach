@@ -1,0 +1,27 @@
+---
+title: "Age Period Cohor Effects"
+format: html
+---
+
+# Age Period Cohort Effects on labor market trends 
+
+**Disclaimer: esto forma parte de mis notas, asi como del posible cuerpo del texto.**
+
+
+## Interesting trends. 
+
+El Cohorte se define con 
+
+1. Año de nacimiento
+2. Nivel educativo 
+3. Género
+
+Las tasas de participación a analizar: 
+
+1. Tasa de ocupación
+2. Tasa de desempleo 
+3. Tasa de ocupación del sector informal asalariado
+4. Tasa de autoempleo. (Casi no me interesa esto. :/)
+
+
+
