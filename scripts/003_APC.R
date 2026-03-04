@@ -67,7 +67,7 @@ procesa_fila <- function(row) {
       r_def == 0,
       c_res %in% c(1, 3),
       eda >= 20,
-      eda <= 75
+      eda <= 70
     ) |>
     mutate(
       # year_nac dinámico: usa el año del trimestre que se está procesando
@@ -94,44 +94,58 @@ procesa_fila <- function(row) {
   cohortes <- sdemt |>
     group_by(year_nac, niv_esc, genero) |>
     summarise(
-      edad   = first(eda),
-      n_obs        = n(),
-      n_pond       = as.integer(sum(.data[[peso]], na.rm = TRUE)),
-      n_ocu        = as.integer(sum(.data[[peso]][clase1 == 1 & clase2 == 1],
-                                    na.rm = TRUE)),
-      n_eco_activa = as.integer(sum(.data[[peso]][clase1 == 1],
-                                    na.rm = TRUE)),
-
-      # Tasa de ocupación: ocupados / población total del cohorte
-      tasa_ocu     = weighted.mean(clase2 == 1, .data[[peso]], na.rm = TRUE),
-
-      # NOTA: tasa_desocu está calculada sobre la población total del cohorte
-      # (PEA + PNEA), no sobre la PEA. Para obtener la tasa de desempleo
-      # abierto oficial (desocupados / PEA) reemplazar el denominador:
-      #   weighted.mean(clase1 == 1 & clase2 == 2,
-      #                 .data[[peso]] * (clase1 == 1), na.rm = TRUE)
-      tasa_desocu  = weighted.mean(clase1 == 1 & clase2 == 2,
-                                   .data[[peso]], na.rm = TRUE),
-
-      formal       = weighted.mean(pos_ocu == 1 & seg_soc == 1,
-                                   .data[[peso]], na.rm = TRUE),
-      informal     = weighted.mean(pos_ocu == 1 & seg_soc == 2,
-                                   .data[[peso]], na.rm = TRUE),
-      auto_empleo  = weighted.mean(pos_ocu == 3,
-                                   .data[[peso]], na.rm = TRUE),
-      ingreso_mean = weighted.mean(
-        ingreso[!is.na(ingreso)],
-        .data[[peso]][!is.na(ingreso)], 
-        na.rm = TRUE
-      ),
-      .groups = "drop"
+    edad         = as.integer(round(weighted.mean(eda, .data[[peso]], na.rm = TRUE))),
+    n_obs        = n(),
+    n_pond       = as.integer(sum(.data[[peso]], na.rm = TRUE)),
+    n_ocu        = as.integer(sum(.data[[peso]][clase1 == 1 & clase2 == 1],
+                                  na.rm = TRUE)),
+    n_eco_activa = as.integer(sum(.data[[peso]][clase1 == 1],
+                                  na.rm = TRUE)),
+    # Tasas (denominador = poblacion economicamente activa del cohorte) ----------
+    tasa_part   = weighted.mean(
+                    clase1 == 1,
+                    .data[[peso]], na.rm = TRUE),
+    tasa_desocu = weighted.mean(
+                    clase2 == 2,
+                    .data[[peso]] * (clase1 == 1),  # denominador = PEA
+                    na.rm = TRUE),
+    tasa_ocu = weighted.mean(
+                    clase2 == 1,
+                    .data[[peso]],  # denominador = población total del cohorte 
+                    na.rm = TRUE),
+    # Shares (denominador = ocupados del cohorte) ----------------
+    # Las cuatro categorías son mutuamente excluyentes y exhaustivas:
+    # formal + informal + auto_empleo + no_remunerado = 1
+    # Nota: seg_soc == 3 (n pequeño) se asigna a informal siguiendo
+    # el criterio del paper (ausencia de seguridad social laboral).
+    formal      = weighted.mean(
+                    pos_ocu == 1 & seg_soc == 1,
+                    .data[[peso]] * (clase1 == 1 & clase2 == 1),
+                    na.rm = TRUE),
+    informal    = weighted.mean(
+                    pos_ocu == 1 & seg_soc %in% c(2, 3),
+                    .data[[peso]] * (clase1 == 1 & clase2 == 1),
+                    na.rm = TRUE),
+    auto_empleo = weighted.mean(
+                    pos_ocu %in% c(2, 3),
+                    .data[[peso]] * (clase1 == 1 & clase2 == 1),
+                    na.rm = TRUE),
+    no_remunerado = weighted.mean(
+                    pos_ocu == 4,
+                    .data[[peso]] * (clase1 == 1 & clase2 == 1),
+                    na.rm = TRUE),
+    ingreso_mean = weighted.mean(
+                     ingreso[!is.na(ingreso)],
+                     .data[[peso]][!is.na(ingreso)],
+                     na.rm = TRUE),
+    .groups = "drop"
     ) |>
     mutate(
       year = year, 
       trim = trim,
       cohort_id = str_glue("{year_nac}_{niv_esc}_{genero}")
     ) |>
-    relocate(year, trim, year_nac, niv_esc, genero, edad)
+    relocate(cohort_id, year, trim, year_nac, niv_esc, genero, edad)
 
   cohortes
 }
@@ -139,6 +153,7 @@ procesa_fila <- function(row) {
 procesa_fila_safe <- purrr::safely(procesa_fila, otherwise = NULL)
 
 # ── paralelización ────────────────────────────────────────────
+
 plan(multisession, workers = 8)
 
 jobs <- split(catalogo, seq_len(nrow(catalogo)))
@@ -157,7 +172,10 @@ ok  <- map(res, "result") %>% compact()
 err <- map(res, "error")  %>% keep(~ !is.null(.x))
 
 panel <- bind_rows(ok) |>
-  arrange(year, trim, year_nac, niv_esc, genero)
+  arrange(year, trim, year_nac, niv_esc, genero) |>
+  # Duval-Hernández & Orraca Romano (2009): celdas con >= 100 observaciones
+  # (n_obs es el conteo no ponderado de encuestados en la celda)
+  filter(n_obs >= 100)
 
 # ── log de errores ────────────────────────────────────────────
 if (length(err) > 0) {
