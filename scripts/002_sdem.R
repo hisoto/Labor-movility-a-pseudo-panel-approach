@@ -1,8 +1,12 @@
-# ------------------------------------------------------------
-# Pipeline ENOE: SDEM + COE1 (join por llave del catálogo)
-# + filtros + empleo ponderado
-# Paraleliza con furrr::future_map_dfr()
-# ------------------------------------------------------------
+# ============================================================
+# 002_sdem.R
+# Series de tiempo por educación y género — ENOE 2005–2025
+# Replica Figuras 1 y 2 de Duval-Hernández & Orraca Romano (2009)
+#
+# Estructura basada en 003_pseudo_panel.R — solo requiere SDEM
+# Output: un RDS con una fila por year × trim × niv_esc × genero
+# Figuras: PNG en outputs/
+# ============================================================
 
 rm(list = ls()); gc()
 options(scipen = 999)
@@ -15,104 +19,86 @@ pacman::p_load(
   beepr
 )
 
-# ----------------------- INPUTS -----------------------------
+# ── inputs / outputs ─────────────────────────────────────────
 catalogo_path <- "outputs/catalogo_enoe_sdem_coe1.rds"
-out_path      <- "outputs/serie_empleo_construccion.rds"
+out_path      <- "outputs/serie_educacion_genero.rds"
 
+# Solo necesitamos SDEM
 catalogo <- readRDS(catalogo_path)
 
-# Si COE1 es indispensable para tu filtro:
-catalogo <- catalogo %>% filter(existe_coe1)
-
-# ----------------------- SETTINGS ---------------------------
-plan(multisession, workers = 4)
-
-# ----------------------- FUNCIÓN ----------------------------
+# ── función principal ─────────────────────────────────────────
 procesa_fila <- function(row) {
-  
-  year  <- row$year[[1]]
-  trim  <- row$trim[[1]]
-  peso  <- row$peso[[1]]          
-  llave <- row$llave[[1]]         
-  
+
+  year      <- row$year[[1]]
+  trim      <- row$trim[[1]]
+  peso      <- row$peso[[1]]      # "fac" o "fac_tri" según tramo
   path_sdem <- row$path_sdem[[1]]
-  path_coe1 <- row$path_coe1[[1]]
-  
-  # ---- leer SDEM ----
-  sdem <- read_dta(path_sdem)
-  names(sdem) <- tolower(names(sdem))   # 🔹 NORMALIZACIÓN
-  
-  vars_sdem_filtros <- c("r_def","eda","clase1","clase2",
-                         "c_res","pos_ocu","rama")
-  
-  vars_sdem_need <- unique(c(llave, peso, vars_sdem_filtros))
-  
-  sdem <- sdem %>%
-    select(any_of(vars_sdem_need))
-  
-  # ---- leer COE1 ----
-  coe1 <- NULL
-  
-  if (!is.na(path_coe1) && file.exists(path_coe1)) {
-    
-    coe1_raw <- read_dta(path_coe1)
-    names(coe1_raw) <- tolower(names(coe1_raw))  # 🔹 NORMALIZACIÓN
-    
-    # Variable(s) COE1 usadas para filtro
-    vars_coe1_filtro <- c("p4a")
-    
-    vars_coe1_need <- unique(c(llave, vars_coe1_filtro))
-    
-    coe1 <- coe1_raw %>%
-      select(any_of(vars_coe1_need))
-  }
-  
-  # ---- join ----
-  if (!is.null(coe1)) {
-    datos <- sdem %>% left_join(coe1, by = llave)
-  } else {
-    datos <- sdem
-  }
-  
-  n0 <- nrow(datos)
-  
-  # ---- filtros SDEM + COE1 ----
-  datos <- datos %>%
-    filter(r_def == 0) %>%
-    filter(eda >= 15, eda <= 97) %>%
-    filter(clase1 == 1, clase2 == 1) %>%
-    filter(c_res != 2) %>%
-    filter(pos_ocu == 1) %>%
-    filter(rama == 1) %>%
-    filter(p4a %in% c(2361, 2363, 2370,
-                      2381, 2382, 2399))
-  
-  n1 <- nrow(datos)
-  
-  # ---- empleo ponderado ----
-  ocupados <- datos %>%
+
+  # ── leer y filtrar SDEM ────────────────────────────────────
+  sdemt <- read_dta(path_sdem)
+  names(sdemt) <- tolower(names(sdemt))
+
+  sdemt <- sdemt |>
+    filter(
+      r_def == 0,
+      c_res %in% c(1, 3),
+      eda >= 20,
+      eda <= 70
+    ) |>
+    mutate(
+      niv_esc = case_when(
+        anios_esc >= 0 & anios_esc <= 6  ~ "Básica",
+        anios_esc > 6  & anios_esc <= 12 ~ "Intermedia",
+        anios_esc > 12                   ~ "Superior",
+        TRUE                             ~ NA_character_
+      ),
+      genero = case_when(
+        sex == 1 ~ "Hombre",
+        sex == 2 ~ "Mujer",
+        TRUE     ~ NA_character_
+      )
+    ) |>
+    filter(!is.na(niv_esc), !is.na(genero))
+
+  # ── agregar por educación y género (serie de tiempo) ───────
+  serie <- sdemt |>
+    group_by(niv_esc, genero) |>
     summarise(
-      ocupados = sum(.data[[peso]], na.rm = TRUE)
-    ) %>%
-    pull(ocupados)
-  
-  tibble(
-    year = year,
-    trim = trim,
-    ocupados = ocupados,
-    n_before = n0,
-    n_after  = n1,
-    tiene_coe1 = !is.null(coe1)
-  )
+      n_obs       = n(),
+      tasa_part   = weighted.mean(
+                      clase1 == 1,
+                      .data[[peso]], na.rm = TRUE),
+      tasa_desocu = weighted.mean(
+                      clase2 == 2,
+                      .data[[peso]] * (clase1 == 1),
+                      na.rm = TRUE),
+      formal      = weighted.mean(
+                      pos_ocu == 1 & seg_soc == 1,
+                      .data[[peso]] * (clase1 == 1 & clase2 == 1),
+                      na.rm = TRUE),
+      informal    = weighted.mean(
+                      pos_ocu == 1 & seg_soc %in% c(2, 3),
+                      .data[[peso]] * (clase1 == 1 & clase2 == 1),
+                      na.rm = TRUE),
+      auto_empleo = weighted.mean(
+                      pos_ocu %in% c(2, 3),
+                      .data[[peso]] * (clase1 == 1 & clase2 == 1),
+                      na.rm = TRUE),
+      .groups = "drop"
+    ) |>
+    mutate(year = year, trim = trim) |>
+    relocate(year, trim, niv_esc, genero)
+
+  serie
 }
 
-# Envolver en safely para que un trimestre malo no tumbe todo
 procesa_fila_safe <- purrr::safely(procesa_fila, otherwise = NULL)
 
-# Split del catálogo en lista de 1 fila por elemento
+# ── paralelización ────────────────────────────────────────────
+plan(multisession, workers = 8)
+
 jobs <- split(catalogo, seq_len(nrow(catalogo)))
 
-# ----------------------- RUN -------------------------------
 res <- future_map(
   jobs,
   procesa_fila_safe,
@@ -120,27 +106,142 @@ res <- future_map(
   .options  = furrr_options(seed = TRUE)
 )
 
-# Separar éxitos y errores
+plan(sequential)
+
+# ── separar éxitos y errores ──────────────────────────────────
 ok  <- map(res, "result") %>% compact()
 err <- map(res, "error")  %>% keep(~ !is.null(.x))
 
-serie <- bind_rows(ok) %>%
-  arrange(year, trim)
-
-# Guardar log de errores si existen
 if (length(err) > 0) {
   log_err <- tibble(
     idx = which(map_lgl(res, ~ !is.null(.x$error))),
     msg = map_chr(err, ~ .x$message)
   )
-  saveRDS(log_err, "outputs/log_errores_empleo_construccion.rds")
+  message("⚠️  ", nrow(log_err), " trimestre(s) fallaron")
+  saveRDS(log_err, "outputs/log_errores_serie_educ_genero.rds")
 }
+
+serie <- bind_rows(ok) |>
+  arrange(year, trim, niv_esc, genero) |>
+  mutate(
+    fecha   = year + (trim - 1) / 4,
+    niv_esc = factor(niv_esc, levels = c("Básica", "Intermedia", "Superior"))
+  )
 
 saveRDS(serie, out_path)
 
-# Reset plan
-plan(sequential)
-
 beepr::beep()
 
-serie
+# ── Figura 1: Participación laboral y desempleo ───────────────
+# Replica el panel 2×2 del paper (Figura 1):
+#   filas = indicador (participación / desempleo)
+#   columnas = género (Hombre / Mujer)
+#   líneas = nivel educativo
+
+fig1_data <- serie |>
+  select(fecha, niv_esc, genero, tasa_part, tasa_desocu) |>
+  pivot_longer(
+    cols      = c(tasa_part, tasa_desocu),
+    names_to  = "indicador",
+    values_to = "valor"
+  ) |>
+  mutate(
+    indicador = recode(indicador,
+      tasa_part   = "Participación laboral",
+      tasa_desocu = "Desempleo"
+    ),
+    indicador = factor(indicador,
+      levels = c("Participación laboral", "Desempleo"))
+  )
+
+fig1 <- ggplot(fig1_data,
+               aes(x = fecha, y = valor,
+                   color = niv_esc, linetype = niv_esc)) +
+  geom_line(linewidth = 0.7) +
+  facet_grid(indicador ~ genero, scales = "free_y") +
+  scale_color_manual(
+    values = c("Básica" = "black", "Intermedia" = "#555555", "Superior" = "#999999"),
+    name   = "Educación"
+  ) +
+  scale_linetype_manual(
+    values = c("Básica" = "solid", "Intermedia" = "dashed", "Superior" = "dotted"),
+    name   = "Educación"
+  ) +
+  scale_x_continuous(breaks = seq(2005, 2025, 4)) +
+  scale_y_continuous(labels = scales::percent_format(accuracy = 1)) +
+  labs(
+    title    = "Figura 1. Tasas de participación laboral y desempleo",
+    subtitle = "Por nivel educativo y género — ENOE 2005–2025",
+    x        = NULL,
+    y        = "Tasa"
+  ) +
+  theme_bw(base_size = 11) +
+  theme(
+    legend.position  = "bottom",
+    strip.background = element_blank(),
+    strip.text       = element_text(face = "bold")
+  )
+
+ggsave("outputs/figura1_participacion_desempleo.png", fig1,
+       width = 10, height = 7, dpi = 300)
+
+# ── Figura 2: Shares sectoriales ─────────────────────────────
+# Replica el panel 3×2 del paper (Figura 2):
+#   filas = sector (formal / informal asalariado / autoempleo)
+#   columnas = género
+#   líneas = nivel educativo
+
+fig2_data <- serie |>
+  select(fecha, niv_esc, genero, formal, informal, auto_empleo) |>
+  pivot_longer(
+    cols      = c(formal, informal, auto_empleo),
+    names_to  = "sector",
+    values_to = "share"
+  ) |>
+  mutate(
+    sector = recode(sector,
+      formal      = "Sector formal",
+      informal    = "Informal asalariado",
+      auto_empleo = "Autoempleo"
+    ),
+    sector = factor(sector,
+      levels = c("Sector formal", "Informal asalariado", "Autoempleo"))
+  )
+
+fig2 <- ggplot(fig2_data,
+               aes(x = fecha, y = share,
+                   color = niv_esc, linetype = niv_esc)) +
+  geom_line(linewidth = 0.7) +
+  facet_grid(sector ~ genero, scales = "free_y") +
+  scale_color_manual(
+    values = c("Básica" = "black", "Intermedia" = "#555555", "Superior" = "#999999"),
+    name   = "Educación"
+  ) +
+  scale_linetype_manual(
+    values = c("Básica" = "solid", "Intermedia" = "dashed", "Superior" = "dotted"),
+    name   = "Educación"
+  ) +
+  scale_x_continuous(breaks = seq(2005, 2025, 4)) +
+  scale_y_continuous(labels = scales::percent_format(accuracy = 1)) +
+  labs(
+    title    = "Figura 2. Shares de empleo por sector",
+    subtitle = "Por nivel educativo y género — ENOE 2005–2025",
+    x        = NULL,
+    y        = "Proporción"
+  ) +
+  theme_bw(base_size = 11) +
+  theme(
+    legend.position  = "bottom",
+    strip.background = element_blank(),
+    strip.text       = element_text(face = "bold")
+  )
+
+ggsave("outputs/figura2_shares_sectoriales.png", fig2,
+       width = 10, height = 10, dpi = 300)
+
+cat("✓ Figuras guardadas en outputs/\n")
+cat(sprintf("  Trimestres cubiertos: %d\n",
+            n_distinct(paste(serie$year, serie$trim))))
+cat(sprintf("  Rango: %d T%d – %d T%d\n",
+            min(serie$year), min(serie$trim[serie$year == min(serie$year)]),
+            max(serie$year), max(serie$trim[serie$year == max(serie$year)])))
