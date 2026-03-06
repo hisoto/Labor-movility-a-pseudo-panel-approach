@@ -4,7 +4,7 @@
 # Duval-Hernández & Orraca Romano (2009)
 #
 # Modelo:  ln(p_ct/(1-p_ct)) = θ + α_a + κ_c + τ_t + ε_ct
-# Método:  WLS ponderado por tamaño de celda (n_pond)
+# Método:  WLS ponderado por tamaño de celda (n_obs)
 # ID:      Normalización de Deaton — dummies de periodo
 #          ortogonalizadas a [1, t] antes de estimar.
 #
@@ -134,6 +134,10 @@ estima_apc <- function(df, var_dep) {
     return(NULL)
   }
 
+  # Periodos observados por cohorte (diagnóstico de cohortes frágiles)
+  periodos_por_cohorte <- df_sub |>
+    summarise(n_periodos = n_distinct(periodo), .by = year_nac)
+
   # Re-indexar dentro del subgrupo (garantiza 1..N sin huecos)
   periodos_uniq <- sort(unique(df_sub$periodo))
   edades_uniq   <- sort(unique(df_sub$edad))
@@ -177,7 +181,7 @@ estima_apc <- function(df, var_dep) {
     " ~ factor(edad_idx) + factor(cohorte_idx) + ",
     paste(nms_d, collapse = " + ")
   ))
-  fit_con <- lm(f_con, data = df_aug, weights = df_aug$n_pond)
+  fit_con <- lm(f_con, data = df_aug, weights = df_aug$n_obs)
 
   # ── Recuperar τ_t (T valores, ya normalizados) ───────────────
   # τ = D_deaton %*% coef_d   (proyección inversa al espacio ⊥[1,t])
@@ -200,7 +204,8 @@ estima_apc <- function(df, var_dep) {
     left_join(map_edad, by = c("idx" = "edad_idx"))
 
   kappa_tbl <- extraer_efectos(fit_con, "^factor\\(cohorte_idx\\)") |>
-    left_join(map_cohorte, by = c("idx" = "cohorte_idx"))
+    left_join(map_cohorte, by = c("idx" = "cohorte_idx")) |>
+    left_join(periodos_por_cohorte, by = "year_nac")
 
   list(
     tau   = tau_tbl,
@@ -262,6 +267,25 @@ if (!is.null(check_tau)) {
   t_idx <- seq_len(nrow(check_tau))
   cat(sprintf("  Σ τ_t      = %+.2e  (debe ser ≈ 0)\n", sum(check_tau$tau)))
   cat(sprintf("  Σ t·τ_t    = %+.2e  (debe ser ≈ 0)\n", sum(t_idx * check_tau$tau)))
+}
+
+# ╔══════════════════════════════════════════════════════════╗
+# ║  DIAGNÓSTICO: COHORTES FRÁGILES                          ║
+# ╚══════════════════════════════════════════════════════════╝
+
+cat("\n=== Diagnóstico: periodos observados por cohorte (part) ===\n")
+for (g in names(resultados)) {
+  k <- resultados[[g]][["part"]]$kappa
+  if (is.null(k) || !"n_periodos" %in% names(k)) next
+  fragiles <- k |> filter(n_periodos < 20)
+  cat(sprintf("  %-22s n_periodos rango [%d, %d]",
+              g, min(k$n_periodos), max(k$n_periodos)))
+  if (nrow(fragiles) > 0) {
+    cat(sprintf(" | < 20 per: %d cohortes (year_nac %d–%d)\n",
+                nrow(fragiles), min(fragiles$year_nac), max(fragiles$year_nac)))
+  } else {
+    cat(" | todas las cohortes tienen >= 20 periodos\n")
+  }
 }
 
 # ╔══════════════════════════════════════════════════════════╗
