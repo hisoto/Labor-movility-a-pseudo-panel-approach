@@ -12,6 +12,7 @@ rm(list = ls()); gc()
 options(scipen = 999)
 
 pacman::p_load(tidyverse)
+source("scripts/theme_conasami.R")
 
 # ── cargar panel ──────────────────────────────────────────────
 panel <- readRDS("outputs/panel_cohortes.rds")
@@ -103,11 +104,7 @@ fig3 <- ggplot(fig3_data,
     x        = "Edad",
     y        = "Tasa"
   ) +
-  theme_bw(base_size = 11) +
-  theme(
-    strip.background = element_blank(),
-    strip.text       = element_text(face = "bold")
-  )
+  theme_conasami(base_size = 11)
 
 ggsave("outputs/figura3_perfiles_participacion.png", fig3,
        width = 10, height = 7, dpi = 300)
@@ -146,11 +143,7 @@ fig4 <- ggplot(fig4_data,
     x        = "Edad",
     y        = "Proporción"
   ) +
-  theme_bw(base_size = 11) +
-  theme(
-    strip.background = element_blank(),
-    strip.text       = element_text(face = "bold")
-  )
+  theme_conasami(base_size = 11)
 
 ggsave("outputs/figura4_perfiles_sectores.png", fig4,
        width = 10, height = 10, dpi = 300)

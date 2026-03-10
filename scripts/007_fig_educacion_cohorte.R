@@ -19,6 +19,7 @@ pacman::p_load(
   furrr,
   beepr
 )
+source("scripts/theme_conasami.R")
 
 # ── Inputs / Outputs ─────────────────────────────────────────
 catalogo_path <- "outputs/catalogo_enoe_sdem_coe1.rds"
@@ -132,12 +133,7 @@ fig <- ggplot(educ_cohorte,
     color    = NULL,
     linetype = NULL
   ) +
-  theme_bw(base_size = 11) +
-  theme(
-    legend.position  = "bottom",
-    strip.background = element_blank(),
-    strip.text       = element_text(face = "bold")
-  )
+  theme_conasami(base_size = 11)
 
 ggsave(out_fig, fig, width = 8, height = 6, dpi = 300)
 cat(sprintf("✓ Figura guardada en %s\n", out_fig))

@@ -18,6 +18,7 @@
 rm(list = ls()); gc()
 
 pacman::p_load(tidyverse, patchwork)
+source("scripts/theme_conasami.R")
 
 dir.create("outputs/figuras", showWarnings = FALSE, recursive = TRUE)
 
@@ -125,16 +126,16 @@ df_kappa <- df_kappa |>
 # ║  COMPONENTES COMUNES DE GGPLOT                           ║
 # ╚══════════════════════════════════════════════════════════╝
 
-tema_apc <- theme_bw(base_size = 10) +
+tema_apc <- theme_conasami(
+    base_size       = 10,
+    title_size      = 10,
+    axis_title_size = 9,
+    strip_text_size = 9
+  ) +
   theme(
     panel.grid.minor = element_blank(),
-    strip.background = element_rect(fill = "grey92", color = NA),
-    strip.text       = element_text(face = "bold", size = 9),
-    legend.position  = "bottom",
     legend.title     = element_blank(),
-    legend.key.width = unit(1.8, "cm"),
-    plot.title       = element_text(size = 10, face = "bold"),
-    axis.title       = element_text(size = 9)
+    legend.key.width = unit(1.8, "cm")
   )
 
 escala_color <- scale_color_manual(values = colores,     labels = etiq_niv)
@@ -232,7 +233,7 @@ walk(names(etiq_var), function(v) {
     width    = 18,
     height   = 22,
     units    = "cm",
-    device   = "pdf"
+    device   = cairo_pdf
   )
 
   cat(sprintf("guardada en %s\n", path))
