@@ -41,7 +41,8 @@ panel_est <- readRDS("outputs/panel_cohortes.rds") |>
     lo_desocu     = logodds(tasa_desocu),
     lo_formal     = logodds(formal),
     lo_informal   = logodds(informal),
-    lo_autoempleo = logodds(auto_empleo)
+    lo_autoempleo   = logodds(auto_empleo),
+    lo_sobreocupado = logodds(sobreocupado)
   )
 
 
@@ -83,11 +84,12 @@ panel_est |>
 
 # ── Variables dependientes ────────────────────────────────────
 vars_dep <- c(
-  part       = "lo_part",
-  desocu     = "lo_desocu",
-  formal     = "lo_formal",
-  informal   = "lo_informal",
-  autoempleo = "lo_autoempleo"
+  part         = "lo_part",
+  desocu       = "lo_desocu",
+  formal       = "lo_formal",
+  informal     = "lo_informal",
+  autoempleo   = "lo_autoempleo",
+  sobreocupado = "lo_sobreocupado"
 )
 
 # ╔══════════════════════════════════════════════════════════╗
@@ -208,12 +210,13 @@ estima_apc <- function(df, var_dep) {
     left_join(periodos_por_cohorte, by = "year_nac")
 
   list(
-    tau   = tau_tbl,
-    alpha = alpha_tbl,
-    kappa = kappa_tbl,
-    r2    = summary(fit_con)$r.squared,
-    n     = nrow(df_sub),
-    dims  = c(T = T, A = A, C = C)
+    tau       = tau_tbl,
+    alpha     = alpha_tbl,
+    kappa     = kappa_tbl,
+    intercept = unname(coef(fit_con)[["(Intercept)"]]),
+    r2        = summary(fit_con)$r.squared,
+    n         = nrow(df_sub),
+    dims      = c(T = T, A = A, C = C)
   )
 }
 
