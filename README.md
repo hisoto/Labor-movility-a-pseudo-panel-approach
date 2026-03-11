@@ -203,18 +203,23 @@ de experiencia.
 
 ![](outputs/figuras/fig_desocu_kappa.png)
 
-Las cohortes más jóvenes muestran tasas de desempleo de largo plazo
-ligeramente más bajas, particularmente para niveles de educación
-intermedia, lo que puede reflejar mayor selectividad en la búsqueda de
-empleo o mayor exigencia salarial en generaciones recientes.
+Las cohortes más jóvenes muestran tasas de desempleo de largo plazo más
+bajas en todos los grupos educativos. El descenso generacional es más
+pronunciado en el grupo de educación básica: en hombres, la tasa a los
+42 años pasa de ~8% en las cohortes nacidas en 1935–1945 a ~1% en las
+más recientes; en mujeres se observa un patrón similar, aunque con mayor
+ruido en las cohortes antiguas. Los grupos de educación intermedia y
+superior muestran niveles más bajos desde el inicio y una convergencia
+hacia valores cercanos a cero en las generaciones recientes.
 
 **Efecto periodo ($\tau_t$)**
 
 ![](outputs/figuras/fig_desocu_tau.png)
 
-El desempleo es marcadamente procíclico. La crisis de 2008–2009 y el
-episodio de 2020 son los shocks más visibles, con magnitudes similares
-entre géneros.
+El desempleo es marcadamente contracíclico: el componente cíclico es
+positivo durante las recesiones y negativo durante las expansiones. La
+crisis de 2008–2009 y el episodio de 2020 son los shocks más visibles,
+con magnitudes similares entre géneros.
 
 ------------------------------------------------------------------------
 
@@ -224,10 +229,13 @@ entre géneros.
 
 ![](outputs/figuras/fig_formal_alpha.png)
 
-La probabilidad de empleo formal es más alta en edades medias (30–50) y
-declina en adultos mayores, reflejando las trayectorias típicas de
-salida del sector asalariado formal hacia el autoempleo o la
-inactividad.
+La probabilidad de empleo formal es alta y relativamente estable desde
+los 20 hasta los 55 años, con un descenso pronunciado a partir de esa
+edad que refleja la salida progresiva del empleo asalariado formal hacia
+el autoempleo o la inactividad. La brecha educativa es amplia: en
+hombres, la cohorte de 1956 muestra tasas de ~60% para educación
+superior frente a ~20% para educación básica a lo largo de todo el ciclo
+de vida.
 
 **Efecto cohorte ($\kappa_c$) — edad de referencia: 42 años**
 
@@ -242,9 +250,14 @@ intermedia.
 
 ![](outputs/figuras/fig_formal_tau.png)
 
-Los efectos de periodo son de menor magnitud que en la participación y
-el desempleo, con una ligera caída durante 2020 y recuperación
-posterior.
+Los efectos de periodo son moderados para los grupos de educación
+intermedia y superior, que fluctúan cerca de cero a lo largo de todo el
+período. El grupo de educación básica muestra considerablemente mayor
+variabilidad: en hombres se aprecia una caída notable durante 2008–2010
+(hasta –0.15 log-odds) y un leve valle en 2020 seguido de recuperación;
+en mujeres la variabilidad es aún mayor, con un pico positivo
+pronunciado alrededor de 2020. El episodio COVID-19 no presenta un
+patrón uniforme entre grupos.
 
 ------------------------------------------------------------------------
 
@@ -273,9 +286,12 @@ cohorte.
 ![](outputs/figuras/fig_informal_tau.png)
 
 El componente cíclico muestra un incremento de la informalidad durante
-las crisis de 2008–2009 y 2020, consistente con el papel del sector
-informal como amortiguador en contextos de contracción del empleo
-formal.
+2008–2009, visible como un pico positivo en ambos géneros, consistente
+con el papel del sector informal como amortiguador en contextos de
+contracción del empleo formal. En 2020 el movimiento cíclico es neutro o
+negativo — no se observa el mismo patrón de sustitución, lo que refleja
+que muchos trabajadores informales salieron de la ocupación por completo
+durante la pandemia.
 
 ------------------------------------------------------------------------
 
@@ -294,10 +310,13 @@ asalariado en edades más avanzadas.
 
 ![](outputs/figuras/fig_autoempleo_kappa.png)
 
-No se aprecian diferencias generacionales sistemáticas importantes,
-salvo que las cohortes con mayor nivel educativo presentan tasas de
-autoempleo consistentemente más bajas, posiblemente porque el empleo
-asalariado formal es más accesible para ellas.
+Las cohortes con mayor nivel educativo presentan tasas de autoempleo
+consistentemente más bajas en todas las generaciones. El grupo de
+educación básica muestra una caída generacional clara en ambos géneros:
+los hombres pasan de ~48% en las cohortes nacidas en 1935 a ~30–35% en
+las cohortes más recientes; un patrón similar, aunque con niveles algo
+menores, se observa en mujeres. Los grupos de educación intermedia y
+superior muestran tendencias generacionales más moderadas.
 
 **Efecto periodo ($\tau_t$)**
 

@@ -160,19 +160,19 @@ El desempleo es marcadamente contracíclico: el componente cíclico es positivo 
 
 ![](outputs/figuras/fig_formal_alpha.png)
 
-La probabilidad de empleo formal es más alta en edades medias (30–50) y declina en adultos mayores, reflejando las trayectorias típicas de salida del sector asalariado formal hacia el autoempleo o la inactividad.
+La probabilidad de empleo formal es alta y relativamente estable desde los 20 hasta los 55 años, con un descenso pronunciado a partir de esa edad que refleja la salida progresiva del empleo asalariado formal hacia el autoempleo o la inactividad. La brecha educativa es amplia: en hombres, la cohorte de 1956 muestra tasas de ~60% para educación superior frente a ~20% para educación básica a lo largo de todo el ciclo de vida.
 
 **Efecto cohorte ($\kappa_c$) — edad de referencia: 42 años**
 
 ![](outputs/figuras/fig_formal_kappa.png)
 
-Las cohortes con educación superior muestran niveles de formalidad consistentemente más altos en todas las generaciones. No se aprecia una tendencia generacional clara en los grupos de educación básica e intermedia.
+Las cohortes con educación superior muestran los niveles de formalidad más altos en todas las generaciones, relativamente estables a lo largo del tiempo. En hombres se aprecia una tendencia generacional descendente en los grupos de educación básica e intermedia: la tasa de formalidad a los 42 años cae de ~75% a ~35% para intermedia y de ~22% a ~12% para básica entre las cohortes nacidas en 1935 y las más recientes. En mujeres el patrón es similar para educación intermedia; básica muestra niveles bajos en todas las generaciones con escasa variación.
 
 **Efecto periodo ($\tau_t$)**
 
 ![](outputs/figuras/fig_formal_tau.png)
 
-Los efectos de periodo son de menor magnitud que en la participación y el desempleo, con una ligera caída durante 2020 y recuperación posterior.
+Los efectos de periodo son moderados para los grupos de educación intermedia y superior, que fluctúan cerca de cero a lo largo de todo el período. El grupo de educación básica muestra considerablemente mayor variabilidad: en hombres se aprecia una caída notable durante 2008–2010 (hasta –0.15 log-odds) y un leve valle en 2020 seguido de recuperación; en mujeres la variabilidad es aún mayor, con un pico positivo pronunciado alrededor de 2020. El episodio COVID-19 no presenta un patrón uniforme entre grupos.
 
 ---
 
@@ -188,7 +188,7 @@ El empleo informal asalariado es más común en jóvenes y disminuye con la edad
 
 ![](outputs/figuras/fig_informal_kappa.png)
 
-Las cohortes de educación básica presentan los mayores niveles de informalidad en todas las generaciones. No se observa una mejora generacional significativa, lo que sugiere que las barreras estructurales hacia la formalidad persisten independientemente de la cohorte.
+Los grupos de educación básica e intermedia muestran un incremento generacional sostenido en el empleo informal asalariado: en hombres, básica pasa de ~27% (cohortes nacidas en 1935) a ~60% (cohortes más recientes), e intermedia de ~15% a ~35%; en mujeres se observa un patrón similar. El grupo de educación superior permanece en niveles bajos y relativamente estables. Este patrón es consistente con el deterioro generacional del empleo formal observado en el efecto cohorte de esa variable.
 
 **Efecto periodo ($\tau_t$)**
 
@@ -216,7 +216,7 @@ Las cohortes con mayor nivel educativo presentan tasas de autoempleo consistente
 
 ![](outputs/figuras/fig_autoempleo_tau.png)
 
-El componente cíclico del autoempleo presenta mayor variabilidad que el de los otros sectores, lo que es consistente con la entrada de trabajadores desplazados del empleo formal durante períodos de crisis económica.
+El componente cíclico del autoempleo presenta alta variabilidad, especialmente en el grupo de educación básica de hombres, que registra caídas pronunciadas durante 2009–2011 (hasta –0.25 log-odds) y movimientos negativos en 2020. Los grupos de educación intermedia y superior muestran menor amplitud. No se observa un patrón uniforme de aumento cíclico del autoempleo en períodos de crisis.
 
 ---
 
