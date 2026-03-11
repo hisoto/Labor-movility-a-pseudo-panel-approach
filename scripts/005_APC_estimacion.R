@@ -223,7 +223,7 @@ estima_apc <- function(df, var_dep) {
 estima_apc_safe <- safely(estima_apc, otherwise = NULL)
 
 # ╔══════════════════════════════════════════════════════════╗
-# ║  LOOP DE ESTIMACIÓN (6 grupos × 5 variables = 30 modelos)║
+# ║  LOOP DE ESTIMACIÓN (6 grupos × 6 variables = 36 modelos)║
 # ╚══════════════════════════════════════════════════════════╝
 
 grupos <- expand_grid(
