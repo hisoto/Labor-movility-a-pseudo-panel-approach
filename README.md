@@ -126,15 +126,16 @@ El pseudo-panel se construye agrupando observaciones de la ENOE
 | Periodo | Trimestres 2005T1–2025T4 |
 
 Solo se conservan celdas con al menos 100 observaciones no ponderadas.
-Se estiman 30 modelos en total (6 grupos × 5 variables dependientes).
+Se estiman 36 modelos en total (6 grupos × 6 variables dependientes).
 
-| Variable | Numerador | Denominador |
-|----|----|----|
-| Tasa de participación | PEA | Población total |
-| Tasa de desempleo | Desocupados | PEA |
-| Empleo formal | Asalariados con seguridad social | Ocupados |
-| Empleo informal asalariado | Asalariados sin seguridad social | Ocupados |
-| Autoempleo | Empleadores + cuenta propia | Ocupados |
+| Variable | Numerador | Denominador | Fuente |
+|----|----|----|----|
+| Tasa de participación | PEA | Población total | Paper |
+| Tasa de desempleo | Desocupados | PEA | Paper |
+| Empleo formal | Asalariados con seguridad social | Ocupados | Paper |
+| Empleo informal asalariado | Asalariados sin seguridad social | Ocupados | Paper |
+| Autoempleo | Empleadores + cuenta propia | Ocupados | Paper |
+| Sobreocupación | Asalariados con `hrsocup > 40` | Asalariados | Extensión |
 
 ### Representación gráfica
 
@@ -171,10 +172,8 @@ significativamente más altas a lo largo de todo el ciclo de vida.
 
 Cohortes femeninas más jóvenes participan consistentemente más que las
 precedentes, reflejando la tendencia secular de incorporación al mercado
-laboral. En los hombres el desplazamiento generacional es menor, aunque
-el grupo de educación básica muestra una tendencia descendente clara:
-cohortes más recientes presentan tasas de participación notablemente
-más bajas que las generaciones anteriores.
+laboral. En los hombres el desplazamiento generacional es menor y sin
+una dirección clara.
 
 **Efecto periodo ($\tau_t$)**
 
@@ -182,8 +181,8 @@ más bajas que las generaciones anteriores.
 
 El componente cíclico de la participación es moderado. Se observa una
 caída en torno a 2008–2009 (crisis financiera global) y un deterioro
-pronunciado en 2020T2 (pandemia COVID-19), aunque el efecto esta
-exhacerbado por la disponibilidad de los datos en el tercer trimestre de
+pronunciado en 2020T2 (pandemia COVID-19), aunque el efecto está
+exacerbado por la disponibilidad de los datos en el tercer trimestre de
 2020. La recuperación posterior es más rápida en hombres que en mujeres,
 especialmente en los grupos de educación intermedia y superior.
 
@@ -235,12 +234,9 @@ inactividad.
 ![](outputs/figuras/fig_formal_kappa.png)
 
 Las cohortes con educación superior muestran niveles de formalidad
-consistentemente más altos en todas las generaciones. La educación
-intermedia presenta una caída generacional marcada: cohortes nacidas
-alrededor de 1935 registran tasas de formalidad de ~75% (hombres) y
-~60% (mujeres), que se reducen a ~42% y ~28% respectivamente en
-cohortes recientes. La educación básica permanece estable en niveles
-bajos a lo largo de todas las generaciones.
+consistentemente más altos en todas las generaciones. No se aprecia una
+tendencia generacional clara en los grupos de educación básica e
+intermedia.
 
 **Efecto periodo ($\tau_t$)**
 
@@ -267,24 +263,19 @@ formalidad conforme se acumula experiencia laboral.
 ![](outputs/figuras/fig_informal_kappa.png)
 
 Las cohortes de educación básica presentan los mayores niveles de
-informalidad en todas las generaciones. Se observa además un
-deterioro generacional sistemático: las cohortes más jóvenes registran
-tasas de informalidad considerablemente más altas que las generaciones
-precedentes en todos los grupos educativos (en educación básica, de
-~28% a ~56% en hombres). Este patrón sugiere un proceso de
-informalización estructural que afecta de manera creciente a las
-generaciones más recientes.
+informalidad en todas las generaciones. No se observa una mejora
+generacional significativa, lo que sugiere que las barreras
+estructurales hacia la formalidad persisten independientemente de la
+cohorte.
 
 **Efecto periodo ($\tau_t$)**
 
 ![](outputs/figuras/fig_informal_tau.png)
 
 El componente cíclico muestra un incremento de la informalidad durante
-la crisis de 2008–2009, consistente con el papel del sector informal
-como amortiguador. En 2020, en cambio, el efecto período es negativo
-en hombres, lo que sugiere una contracción simultánea del empleo
-informal y formal durante el choque pandémico, posiblemente por el
-colapso de sectores intensivos en trabajo informal de contacto.
+las crisis de 2008–2009 y 2020, consistente con el papel del sector
+informal como amortiguador en contextos de contracción del empleo
+formal.
 
 ------------------------------------------------------------------------
 
@@ -303,12 +294,10 @@ asalariado en edades más avanzadas.
 
 ![](outputs/figuras/fig_autoempleo_kappa.png)
 
-Las cohortes con mayor nivel educativo presentan tasas de autoempleo
-consistentemente más bajas, posiblemente porque el empleo asalariado
-formal es más accesible para ellas. En educación básica se aprecia
-además una tendencia generacional descendente moderada: las cohortes
-más recientes muestran tasas de autoempleo algo menores que las
-generaciones anteriores.
+No se aprecian diferencias generacionales sistemáticas importantes,
+salvo que las cohortes con mayor nivel educativo presentan tasas de
+autoempleo consistentemente más bajas, posiblemente porque el empleo
+asalariado formal es más accesible para ellas.
 
 **Efecto periodo ($\tau_t$)**
 
@@ -318,3 +307,43 @@ El componente cíclico del autoempleo presenta mayor variabilidad que el
 de los otros sectores, lo que es consistente con la entrada de
 trabajadores desplazados del empleo formal durante períodos de crisis
 económica.
+
+------------------------------------------------------------------------
+
+### Sobreocupación (extensión)
+
+> **Nota**: esta variable no forma parte del análisis de Duval-Hernández
+> & Orraca Romano (2009). Es una extensión propia. La tasa mide la
+> proporción de asalariados que trabajan más de 40 horas semanales
+> (`hrsocup > 40`) sobre el total de asalariados ocupados.
+
+**Efecto edad ($\alpha_a$) — cohorte de referencia: 1956**
+
+![](outputs/figuras/fig_sobreocupado_alpha.png)
+
+La tasa de sobreocupación es más alta en edades jóvenes y declina con la
+edad en todos los grupos. El gradiente educativo es inverso al del
+empleo formal: los trabajadores con educación básica presentan las tasas
+más altas, y los de educación superior las más bajas. En mujeres los
+niveles son notablemente menores que en hombres en todos los grupos
+educativos.
+
+**Efecto cohorte ($\kappa_c$) — edad de referencia: 42 años**
+
+![](outputs/figuras/fig_sobreocupado_kappa.png)
+
+En hombres los niveles son relativamente estables entre cohortes, con
+básica e intermedia por encima de superior en todas las generaciones. En
+mujeres se observa un marcado aumento en las cohortes más jóvenes para
+todos los niveles educativos: las generaciones nacidas después de 1965
+muestran tasas de sobreocupación claramente más altas que las cohortes
+anteriores, aunque en niveles todavía inferiores a los masculinos.
+
+**Efecto periodo ($\tau_t$)**
+
+![](outputs/figuras/fig_sobreocupado_tau.png)
+
+El componente cíclico de la sobreocupación presenta la mayor
+variabilidad de todas las variables estimadas. No se distingue un patrón
+cíclico claro asociado a las crisis de 2008–2009 o 2020; la serie
+fluctúa alrededor de cero sin tendencia sostenida en ningún grupo.
