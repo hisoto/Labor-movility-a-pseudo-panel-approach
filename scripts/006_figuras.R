@@ -231,7 +231,7 @@ walk(names(etiq_var), function(v) {
     filename = path,
     plot     = fig$combined,
     width    = 18,
-    height   = 22,
+    height   = 28,
     units    = "cm",
     device   = cairo_pdf
   )
@@ -249,7 +249,7 @@ walk(names(etiq_var), function(v) {
       filename = path,
       plot     = fig[[ef]],
       width    = 18,
-      height   = 8,
+      height   = 11,
       units    = "cm",
       dpi      = 200,
       device   = "png"
