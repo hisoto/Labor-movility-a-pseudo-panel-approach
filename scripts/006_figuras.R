@@ -45,7 +45,7 @@ etiq_niv <- c(
 
 etiq_gen <- c("Hombre" = "Hombres", "Mujer" = "Mujeres")
 
-colores     <- c("Básica" = "#1b7837", "Intermedia" = "#762a83", "Superior" = "#e08214")
+colores     <- c("Básica" = "#9b2247", "Intermedia" = "#1e5b4f", "Superior" = "#a57f2c")
 tipos_linea <- c("Básica" = "solid",   "Intermedia" = "dashed",  "Superior" = "dotdash")
 
 # ╔══════════════════════════════════════════════════════════╗
@@ -163,9 +163,9 @@ figura_apc <- function(var) {
     scale_y_continuous(labels = scales::percent_format(accuracy = 1)) +
     labs(
       x        = "Edad",
-      y        = "Tasa predicha",
-      title    = expression(paste("Efecto edad   ", alpha[a])),
-      subtitle = "Cohorte de referencia: 1956"
+      y        = NULL,
+      title    = NULL,
+      subtitle = NULL
     ) +
     tema_apc
 
@@ -178,9 +178,9 @@ figura_apc <- function(var) {
     scale_y_continuous(labels = scales::percent_format(accuracy = 1)) +
     labs(
       x        = "Año de nacimiento",
-      y        = "Tasa predicha",
-      title    = expression(paste("Efecto cohorte   ", kappa[c])),
-      subtitle = "Edad de referencia: 42"
+      y        = NULL,
+      title    = NULL,
+      subtitle = NULL
     ) +
     tema_apc
 
@@ -192,21 +192,18 @@ figura_apc <- function(var) {
     escala_color + escala_tipo +
     scale_x_continuous(breaks = seq(2005, 2025, 5)) +
     labs(
-      x     = "Periodo",
-      y     = "Log-odds",
-      title = expression(paste("Efecto periodo   ", tau[t]))
+      x        = "Periodo",
+      y        = NULL,
+      title    = NULL,
+      subtitle = NULL
     ) +
     tema_apc
 
   # ── Combinar con patchwork ───────────────────────────────────
   combinada <- (p_alpha / p_kappa / p_tau) +
     plot_annotation(
-      title    = etiq_var[var],
-      subtitle = "Descomposición APC — Deaton (1997)",
-      theme    = theme(
-        plot.title    = element_text(face = "bold", size = 13),
-        plot.subtitle = element_text(size = 10, color = "grey40")
-      )
+      title    = NULL,
+      subtitle = NULL
     ) +
     plot_layout(guides = "collect") &
     theme(legend.position = "bottom")
@@ -248,10 +245,10 @@ walk(names(etiq_var), function(v) {
     ggsave(
       filename = path,
       plot     = fig[[ef]],
-      width    = 18,
-      height   = 11,
+      width    = 25,
+      height   = 10,
       units    = "cm",
-      dpi      = 200,
+      dpi      = 300,
       device   = "png"
     )
     cat(sprintf("  PNG: %s\n", path))

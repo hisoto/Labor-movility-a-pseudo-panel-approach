@@ -170,10 +170,10 @@ fig1 <- ggplot(fig1_data,
   scale_x_continuous(breaks = seq(2005, 2025, 4)) +
   scale_y_continuous(labels = scales::percent_format(accuracy = 1)) +
   labs(
-    title    = "Figura 1. Tasas de participación laboral y desempleo",
-    subtitle = "Por nivel educativo y género — ENOE 2005–2025",
+    title    = NULL,
+    subtitle = NULL,
     x        = NULL,
-    y        = "Tasa"
+    y        = ""
   ) +
   theme_bw(base_size = 11) +
   theme(
@@ -186,26 +186,24 @@ ggsave("outputs/figura1_participacion_desempleo.png", fig1,
        width = 10, height = 7, dpi = 300)
 
 # ── Figura 2: Shares sectoriales ─────────────────────────────
-# Replica el panel 3×2 del paper (Figura 2):
-#   filas = sector (formal / informal asalariado / autoempleo)
-#   columnas = género
-#   líneas = nivel educativo
+# Panel 2×2: filas = sector (formal / informal asalariado)
+#             columnas = género
+#             líneas = nivel educativo
 
 fig2_data <- serie |>
-  select(fecha, niv_esc, genero, formal, informal, auto_empleo) |>
+  select(fecha, niv_esc, genero, formal, informal) |>
   pivot_longer(
-    cols      = c(formal, informal, auto_empleo),
+    cols      = c(formal, informal),
     names_to  = "sector",
     values_to = "share"
   ) |>
   mutate(
     sector = recode(sector,
-      formal      = "Sector formal",
-      informal    = "Informal asalariado",
-      auto_empleo = "Autoempleo"
+      formal   = "Sector formal",
+      informal = "Informal asalariado"
     ),
     sector = factor(sector,
-      levels = c("Sector formal", "Informal asalariado", "Autoempleo"))
+      levels = c("Sector formal", "Informal asalariado"))
   )
 
 fig2 <- ggplot(fig2_data,
@@ -224,10 +222,10 @@ fig2 <- ggplot(fig2_data,
   scale_x_continuous(breaks = seq(2005, 2025, 4)) +
   scale_y_continuous(labels = scales::percent_format(accuracy = 1)) +
   labs(
-    title    = "Figura 2. Shares de empleo por sector",
-    subtitle = "Por nivel educativo y género — ENOE 2005–2025",
+    title    = NULL,
+    subtitle = NULL,
     x        = NULL,
-    y        = "Proporción"
+    y        = ""
   ) +
   theme_bw(base_size = 11) +
   theme(
@@ -237,7 +235,7 @@ fig2 <- ggplot(fig2_data,
   )
 
 ggsave("outputs/figura2_shares_sectoriales.png", fig2,
-       width = 10, height = 10, dpi = 300)
+       width = 10, height = 7, dpi = 300)
 
 cat("✓ Figuras guardadas en outputs/\n")
 cat(sprintf("  Trimestres cubiertos: %d\n",
