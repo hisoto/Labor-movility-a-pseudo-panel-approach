@@ -1,2 +1,18 @@
 /inputs
 /replication_project
+
+# Documentos Office (trabajo institucional, no parte del código)
+*.docx
+*.pptx
+
+# Configuración local de Claude Code
+.claude/
+
+# Documentos de explicación de scripts (referencias locales, no para el repo)
+referencias/explicacion_scripts.html
+referencias/explicacion_scripts.md
+referencias/explicacion_scripts_files/
+
+# Scripts y outputs en progreso (sindicalizacion — aún no listo)
+scripts/002a_sindicalizacion.R
+outputs/serie_sindicalizacion.rds
