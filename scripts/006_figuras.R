@@ -127,10 +127,11 @@ df_kappa <- df_kappa |>
 # ╚══════════════════════════════════════════════════════════╝
 
 tema_apc <- theme_conasami(
-    base_size       = 10,
-    title_size      = 10,
-    axis_title_size = 9,
-    strip_text_size = 9
+    base_size        = 10,
+    title_size       = 10,
+    axis_title_size  = 13,
+    legend_text_size = 14,
+    strip_text_size  = 9
   ) +
   theme(
     panel.grid.minor = element_blank(),

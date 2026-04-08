@@ -183,7 +183,7 @@ estima_apc <- function(df, var_dep) {
     " ~ factor(edad_idx) + factor(cohorte_idx) + ",
     paste(nms_d, collapse = " + ")
   ))
-  fit_con <- lm(f_con, data = df_aug, weights = df_aug$n_obs)
+  fit_con <- lm(f_con, data = df_aug, weights = df_aug$n_pond)
 
   # ── Recuperar τ_t (T valores, ya normalizados) ───────────────
   # τ = D_deaton %*% coef_d   (proyección inversa al espacio ⊥[1,t])

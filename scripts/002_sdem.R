@@ -19,6 +19,8 @@ pacman::p_load(
   beepr
 )
 
+source("scripts/theme_conasami.R")
+
 # ── inputs / outputs ─────────────────────────────────────────
 catalogo_path <- "outputs/catalogo_enoe_sdem_coe1.rds"
 out_path      <- "outputs/serie_educacion_genero.rds"
@@ -160,11 +162,11 @@ fig1 <- ggplot(fig1_data,
   geom_line(linewidth = 0.7) +
   facet_grid(indicador ~ genero, scales = "free_y") +
   scale_color_manual(
-    values = c("Básica" = "black", "Intermedia" = "#555555", "Superior" = "#999999"),
+    values = c("Básica" = "#9b2247", "Intermedia" = "#1e5b4f", "Superior" = "#a57f2c"),
     name   = "Educación"
   ) +
   scale_linetype_manual(
-    values = c("Básica" = "solid", "Intermedia" = "dashed", "Superior" = "dotted"),
+    values = c("Básica" = "solid", "Intermedia" = "dashed", "Superior" = "dotdash"),
     name   = "Educación"
   ) +
   scale_x_continuous(breaks = seq(2005, 2025, 4)) +
@@ -175,9 +177,8 @@ fig1 <- ggplot(fig1_data,
     x        = NULL,
     y        = ""
   ) +
-  theme_bw(base_size = 11) +
+  theme_conasami(base_size = 15) +
   theme(
-    legend.position  = "bottom",
     strip.background = element_blank(),
     strip.text       = element_text(face = "bold")
   )
@@ -212,11 +213,11 @@ fig2 <- ggplot(fig2_data,
   geom_line(linewidth = 0.7) +
   facet_grid(sector ~ genero, scales = "free_y") +
   scale_color_manual(
-    values = c("Básica" = "black", "Intermedia" = "#555555", "Superior" = "#999999"),
+    values = c("Básica" = "#9b2247", "Intermedia" = "#1e5b4f", "Superior" = "#a57f2c"),
     name   = "Educación"
   ) +
   scale_linetype_manual(
-    values = c("Básica" = "solid", "Intermedia" = "dashed", "Superior" = "dotted"),
+    values = c("Básica" = "solid", "Intermedia" = "dashed", "Superior" = "dotdash"),
     name   = "Educación"
   ) +
   scale_x_continuous(breaks = seq(2005, 2025, 4)) +
@@ -227,9 +228,8 @@ fig2 <- ggplot(fig2_data,
     x        = NULL,
     y        = ""
   ) +
-  theme_bw(base_size = 11) +
+  theme_conasami(base_size = 15) +
   theme(
-    legend.position  = "bottom",
     strip.background = element_blank(),
     strip.text       = element_text(face = "bold")
   )
