@@ -16,3 +16,5 @@ referencias/explicacion_scripts_files/
 # Scripts y outputs en progreso (sindicalizacion — aún no listo)
 scripts/002a_sindicalizacion.R
 outputs/serie_sindicalizacion.rds
+
+/informe
