@@ -136,6 +136,7 @@ fig <- ggplot(educ_cohorte,
   theme_conasami(base_size = 11)
 
 ggsave(out_fig, fig, width = 8, height = 6, dpi = 300)
+ggsave(gsub("\\.png$", ".svg", out_fig), fig, width = 8, height = 6, device = "svg")
 cat(sprintf("✓ Figura guardada en %s\n", out_fig))
 
 beepr::beep()

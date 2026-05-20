@@ -163,10 +163,9 @@ figura_apc <- function(var) {
     scale_x_continuous(breaks = seq(20, 70, 10)) +
     scale_y_continuous(labels = scales::percent_format(accuracy = 1)) +
     labs(
-      x        = "Edad",
-      y        = NULL,
-      title    = NULL,
-      subtitle = NULL
+      x     = "Edad",
+      y     = "Tasa estimada",
+      title = NULL
     ) +
     tema_apc
 
@@ -178,10 +177,9 @@ figura_apc <- function(var) {
     scale_x_continuous(breaks = seq(1935, 2005, 10)) +
     scale_y_continuous(labels = scales::percent_format(accuracy = 1)) +
     labs(
-      x        = "Año de nacimiento",
-      y        = NULL,
-      title    = NULL,
-      subtitle = NULL
+      x     = "Año de nacimiento",
+      y     = "Tasa estimada",
+      title = NULL
     ) +
     tema_apc
 
@@ -193,18 +191,25 @@ figura_apc <- function(var) {
     escala_color + escala_tipo +
     scale_x_continuous(breaks = seq(2005, 2025, 5)) +
     labs(
-      x        = "Periodo",
-      y        = NULL,
-      title    = NULL,
-      subtitle = NULL
+      x     = "Periodo",
+      y     = NULL,
+      title = NULL
     ) +
     tema_apc
 
   # ── Combinar con patchwork ───────────────────────────────────
   combinada <- (p_alpha / p_kappa / p_tau) +
     plot_annotation(
-      title    = NULL,
-      subtitle = NULL
+      title = etiq_var[[var]],
+      theme = theme(
+        plot.title = element_text(
+          hjust  = 0.5,
+          face   = "bold",
+          size   = 13,
+          family = "Noto Sans",
+          margin = margin(b = 8)
+        )
+      )
     ) +
     plot_layout(guides = "collect") &
     theme(legend.position = "bottom")
@@ -247,13 +252,117 @@ walk(names(etiq_var), function(v) {
       filename = path,
       plot     = fig[[ef]],
       width    = 25,
-      height   = 10,
+      height   = 14,
       units    = "cm",
       dpi      = 300,
       device   = "png"
     )
-    cat(sprintf("  PNG: %s\n", path))
+    ggsave(
+      filename = sprintf("outputs/figuras/fig_%s_%s.svg", v, ef),
+      plot     = fig[[ef]],
+      width    = 25,
+      height   = 14,
+      units    = "cm",
+      device   = "svg"
+    )
+    cat(sprintf("  PNG+SVG: %s\n", path))
   })
 })
+
+# ╔══════════════════════════════════════════════════════════╗
+# ║  FIGURA RESUMEN EJECUTIVO — TASA DE PARTICIPACIÓN        ║
+# ║  Layout: edad arriba a todo ancho; cohorte y periodo     ║
+# ║  abajo lado a lado. Tamaño 12 × 14 cm (≈ ¼ de hoja).     ║
+# ╚══════════════════════════════════════════════════════════╝
+
+cat("Generando figura resumen ejecutivo (tasa de participación) ... ")
+
+tema_resumen <- theme_conasami(
+    base_size        = 7,
+    axis_title_size  = 7,
+    legend_text_size = 7,
+    strip_text_size  = 6.5,
+    panel_spacing    = 0.4,
+    plot_margin      = margin(0.15, 0.15, 0.15, 0.15, "cm")
+  ) +
+  theme(
+    panel.grid.minor = element_blank(),
+    legend.title     = element_blank(),
+    legend.key.width = unit(0.8, "cm"),
+    plot.subtitle    = element_text(
+      hjust  = 0.5,
+      face   = "bold",
+      size   = 7.5,
+      family = "Noto Sans",
+      margin = margin(b = 3)
+    )
+  )
+
+d_a_part <- df_alpha |> filter(variable == "part")
+d_k_part <- df_kappa |> filter(variable == "part")
+d_t_part <- df_tau   |> filter(variable == "part")
+
+p_alpha_r <- ggplot(d_a_part, aes(edad, valor_prob, color = niv_esc, linetype = niv_esc)) +
+  geom_line(linewidth = 0.5) +
+  facet_wrap(~genero, labeller = escala_gen) +
+  escala_color + escala_tipo +
+  scale_x_continuous(breaks = seq(20, 70, 10)) +
+  scale_y_continuous(labels = scales::percent_format(accuracy = 1)) +
+  labs(x = "Edad", y = "Tasa estimada", subtitle = "Efecto edad (α)") +
+  tema_resumen
+
+p_kappa_r <- ggplot(d_k_part, aes(year_nac, valor_prob, color = niv_esc, linetype = niv_esc)) +
+  geom_line(linewidth = 0.5) +
+  facet_wrap(~genero, labeller = escala_gen) +
+  escala_color + escala_tipo +
+  scale_x_continuous(breaks = seq(1935, 2005, 20)) +
+  scale_y_continuous(labels = scales::percent_format(accuracy = 1)) +
+  labs(x = "Año de nacimiento", y = "Tasa estimada", subtitle = "Efecto cohorte (κ)") +
+  tema_resumen
+
+p_tau_r <- ggplot(d_t_part, aes(periodo, valor, color = niv_esc, linetype = niv_esc)) +
+  geom_line(linewidth = 0.5) +
+  hline_cero +
+  facet_wrap(~genero, labeller = escala_gen) +
+  escala_color + escala_tipo +
+  scale_x_continuous(breaks = seq(2005, 2025, 10)) +
+  labs(x = "Periodo", y = NULL, subtitle = "Efecto periodo (τ)") +
+  tema_resumen
+
+resumen <- p_alpha_r / (p_kappa_r | p_tau_r) +
+  plot_annotation(
+    title = etiq_var[["part"]],
+    theme = theme(
+      plot.title = element_text(
+        hjust  = 0.5,
+        face   = "bold",
+        size   = 9,
+        family = "Noto Sans",
+        margin = margin(b = 4)
+      )
+    )
+  ) +
+  plot_layout(guides = "collect", heights = c(1.05, 1)) &
+  theme(legend.position = "bottom")
+
+ggsave(
+  filename = "outputs/figuras/fig_resumen_part.png",
+  plot     = resumen,
+  width    = 12,
+  height   = 14,
+  units    = "cm",
+  dpi      = 300,
+  device   = "png"
+)
+ggsave(
+  filename = "outputs/figuras/fig_resumen_part.svg",
+  plot     = resumen,
+  width    = 12,
+  height   = 14,
+  units    = "cm",
+  device   = "svg"
+)
+
+cat("guardada en outputs/figuras/fig_resumen_part.{png,svg}\n")
 
 cat("\nListo. Figuras en outputs/figuras/\n")

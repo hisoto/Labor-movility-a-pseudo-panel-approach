@@ -177,14 +177,16 @@ fig1 <- ggplot(fig1_data,
     x        = NULL,
     y        = ""
   ) +
-  theme_conasami(base_size = 15) +
+  theme_conasami(base_size = 20) +
   theme(
     strip.background = element_blank(),
     strip.text       = element_text(face = "bold")
   )
 
 ggsave("outputs/figura1_participacion_desempleo.png", fig1,
-       width = 10, height = 7, dpi = 300)
+       width = 15, height = 10, dpi = 300)
+ggsave("outputs/figura1_participacion_desempleo.svg", fig1,
+       width = 15, height = 10, device = "svg")
 
 # ── Figura 2: Shares sectoriales ─────────────────────────────
 # Panel 2×2: filas = sector (formal / informal asalariado)
@@ -228,14 +230,16 @@ fig2 <- ggplot(fig2_data,
     x        = NULL,
     y        = ""
   ) +
-  theme_conasami(base_size = 15) +
+  theme_conasami(base_size = 20) +
   theme(
     strip.background = element_blank(),
     strip.text       = element_text(face = "bold")
   )
 
 ggsave("outputs/figura2_shares_sectoriales.png", fig2,
-       width = 10, height = 7, dpi = 300)
+       width = 15, height = 10, dpi = 300)
+ggsave("outputs/figura2_shares_sectoriales.svg", fig2,
+       width = 15, height = 10, device = "svg")
 
 cat("✓ Figuras guardadas en outputs/\n")
 cat(sprintf("  Trimestres cubiertos: %d\n",

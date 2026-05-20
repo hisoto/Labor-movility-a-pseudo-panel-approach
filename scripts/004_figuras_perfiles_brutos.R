@@ -108,6 +108,8 @@ fig3 <- ggplot(fig3_data,
 
 ggsave("outputs/figura3_perfiles_participacion.png", fig3,
        width = 10, height = 7, dpi = 300)
+ggsave("outputs/figura3_perfiles_participacion.svg", fig3,
+       width = 10, height = 7, device = "svg")
 
 # ── Figura 4: Shares sectoriales ─────────────────────────────
 # Panel 3×2: filas = sector, columnas = género
@@ -147,5 +149,7 @@ fig4 <- ggplot(fig4_data,
 
 ggsave("outputs/figura4_perfiles_sectores.png", fig4,
        width = 10, height = 10, dpi = 300)
+ggsave("outputs/figura4_perfiles_sectores.svg", fig4,
+       width = 10, height = 10, device = "svg")
 
 cat("✓ Figuras guardadas en outputs/\n")
