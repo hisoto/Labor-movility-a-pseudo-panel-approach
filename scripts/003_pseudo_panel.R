@@ -135,7 +135,7 @@ procesa_fila <- function(row) {
                     .data[[peso]] * (clase1 == 1 & clase2 == 1),
                     na.rm = TRUE),
     sobreocupado  = weighted.mean(
-                    hrsocup > 40,
+                    hrsocup > 40 & pos_ocu == 1,
                     .data[[peso]] * (clase1 == 1 & clase2 == 1 & pos_ocu == 1),
                     na.rm = TRUE),
     ingreso_mean = weighted.mean(
